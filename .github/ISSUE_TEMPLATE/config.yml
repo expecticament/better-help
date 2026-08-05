@@ -1,0 +1,8 @@
+blank_issues_enabled: true
+contact_links:
+  - name: Documentation
+    url: https://betterhelp.expecticament.com
+    about: Read the docs first. Answers for players and mod developers are often already there.
+  - name: Ko-fi
+    url: https://ko-fi.com/expecticament
+    about: Support development if you want to.

@@ -1,0 +1,59 @@
+name: Enhancement
+description: Improve something Better /help already does (UI, wording, performance, etc.)
+labels: ["enhancement"]
+body:
+  - type: markdown
+    attributes:
+      value: |
+        Thanks for the suggestion!
+        Use this to improve **existing** behavior.
+        For brand-new features, open a **Feature Request** instead.
+
+  - type: textarea
+    id: enhancement_description
+    attributes:
+      label: What should be improved?
+      description: What exists now, and how should it work better?
+    validations:
+      required: true
+
+  - type: dropdown
+    id: area
+    attributes:
+      label: Area
+      options:
+        - "Command list / pagination"
+        - "'/help <command...>' details"
+        - "Descriptions / translations"
+        - "Metadata (homepage, etc.)"
+        - "Docs / developer integration"
+        - "Code quality / performance"
+        - "Other"
+    validations:
+      required: true
+
+  - type: textarea
+    id: current
+    attributes:
+      label: Current behavior
+      description: What happens now?
+    validations:
+      required: false
+
+  - type: textarea
+    id: proposed
+    attributes:
+      label: Proposed improvement
+      description: What should change?
+    validations:
+      required: true
+
+  - type: checkboxes
+    id: confirmations
+    attributes:
+      label: Confirmation
+      options:
+        - label: This improves existing behavior rather than adding a brand-new feature
+          required: true
+        - label: I searched existing enhancement issues
+          required: true

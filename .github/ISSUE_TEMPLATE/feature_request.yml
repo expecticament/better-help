@@ -1,0 +1,65 @@
+name: Feature Request
+description: Suggest a brand-new feature
+labels: ["feature-request"]
+body:
+  - type: markdown
+    attributes:
+      value: |
+        Thanks for the idea!
+        Use this for **new** features (for example a new metadata type).
+        For improvements to existing behavior, open an **Enhancement** issue instead.
+        Requests for command descriptions that belong in another mod should go to that mod's tracker.
+
+  - type: textarea
+    id: feature_description
+    attributes:
+      label: Feature description
+      description: What new feature should be added?
+    validations:
+      required: true
+
+  - type: dropdown
+    id: area
+    attributes:
+      label: Area
+      description: Where does this mainly fit?
+      options:
+        - "Command list / pagination"
+        - "'/help <command...>' details"
+        - "Descriptions / translations"
+        - "Metadata (homepage, etc.)"
+        - "Docs / developer integration"
+        - "Other"
+    validations:
+      required: true
+
+  - type: textarea
+    id: example
+    attributes:
+      label: Example
+      description: Example command usage, UI, or expected output
+    validations:
+      required: false
+
+  - type: dropdown
+    id: environment
+    attributes:
+      label: Intended environment
+      options:
+        - Any
+        - Singleplayer / Integrated server
+        - Dedicated server
+    validations:
+      required: true
+
+  - type: checkboxes
+    id: confirmations
+    attributes:
+      label: Confirmation
+      options:
+        - label: This is a new feature, not an improvement to existing behavior
+          required: true
+        - label: The latest version does not already have this
+          required: true
+        - label: I searched existing feature requests
+          required: true

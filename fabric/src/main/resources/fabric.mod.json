@@ -1,0 +1,52 @@
+{
+    "schemaVersion": 1,
+    "id": "${mod_id}",
+    "version": "${version}",
+    "name": "${mod_name}",
+    "description": "${description}",
+    "authors": [
+        {
+            "name": "expecticament",
+            "contact": {
+                "email": "contact@expecticament.com",
+                "homepage": "https://expecticament.com"
+            }
+        }
+    ],
+    "contact": {
+        "homepage": "https://betterhelp.expecticament.com",
+        "sources": "https://github.com/expecticament/better-help",
+        "issues": "https://github.com/expecticament/better-help/issues"
+    },
+    "license": "${license}",
+    "icon": "assets/${mod_id}/icon.png",
+    "environment": "*",
+    "entrypoints": {
+        "main": [
+            "com.expecticament.betterhelp.BetterHelpFabric"
+        ]
+    },
+    "mixins": [
+        "${mod_id}.mixins.json",
+        "${mod_id}.fabric.mixins.json"
+    ],
+    "depends": {
+        "fabricloader": ">=${fabric_loader_version}",
+        "fabric-api": "*",
+        "minecraft": "~${minecraft_version}",
+        "java": ">=${java_version}"
+    },
+    "custom": {
+        "modmenu": {
+            "links": {
+                "modmenu.wiki": "https://betterhelp.expecticament.com",
+                "modmenu.kofi": "https://ko-fi.com/expecticament",
+                "modmenu.youtube": "https://www.youtube.com/@expecticament",
+                "modmenu.modrinth": "https://modrinth.com/mod/better-help",
+                "modmenu.curseforge": "https://www.curseforge.com/minecraft/mc-mods/better-help",
+                "modmenu.github_releases": "https://github.com/expecticament/better-help/releases"
+            }
+        }
+    }
+}
+  

@@ -1,0 +1,38 @@
+name: Documentation
+description: Report a documentation mistake or request clearer documentation
+labels: ["documentation"]
+body:
+  - type: markdown
+    attributes:
+      value: |
+        Use this for the [Better /help documentation](https://betterhelp.expecticament.com) or README wording.
+
+  - type: dropdown
+    id: kind
+    attributes:
+      label: Type
+      options:
+        - Incorrect information
+        - Missing information
+        - Unclear / hard to follow
+        - Broken link
+        - Other
+    validations:
+      required: true
+
+  - type: input
+    id: page
+    attributes:
+      label: Page or section
+      description: URL or README heading
+      placeholder: "https://betterhelp.expecticament.com/... or 'For mod developers' section in README"
+    validations:
+      required: true
+
+  - type: textarea
+    id: details
+    attributes:
+      label: What should change?
+      description: What is wrong or missing, and what would make it clearer?
+    validations:
+      required: true

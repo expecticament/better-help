@@ -1,0 +1,85 @@
+name: Integration Help
+description: Questions about adding descriptions or other Better /help metadata to your mod
+labels: ["integration"]
+body:
+  - type: markdown
+    attributes:
+      value: |
+        For key formats and examples, see the [documentation](https://betterhelp.expecticament.com) first.
+        Use this template if something still is not working after following the docs.
+
+  - type: input
+    id: your_mod
+    attributes:
+      label: Your mod id
+      description: The mod you are integrating with Better /help
+      placeholder: "e.g. examplemod"
+    validations:
+      required: true
+
+  - type: input
+    id: betterhelp_version
+    attributes:
+      label: Better /help version
+      placeholder: "e.g. 1.0.0"
+    validations:
+      required: true
+
+  - type: dropdown
+    id: mod_loader
+    attributes:
+      label: Mod loader
+      options:
+        - Both
+        - Fabric
+        - NeoForge
+    validations:
+      required: true
+
+  - type: dropdown
+    id: topic
+    attributes:
+      label: What are you trying to add?
+      options:
+        - Command / argument description
+        - Homepage link
+        - Other metadata
+    validations:
+      required: true
+
+  - type: textarea
+    id: keys
+    attributes:
+      label: Language keys you used
+      description: Paste the relevant JSON entries from your lang file
+      render: json
+      placeholder: |
+        {
+          "examplemod.commands.examplecommand.description": "Description of your command.",
+          "betterhelp.homepage.examplemod": "https://example.com"
+        }
+    validations:
+      required: true
+
+  - type: textarea
+    id: expected
+    attributes:
+      label: What did you expect?
+      placeholder: "`/help examplecommand` should show my description and a 'from mod' line with a homepage link."
+    validations:
+      required: true
+
+  - type: textarea
+    id: actual
+    attributes:
+      label: What happened instead?
+    validations:
+      required: true
+
+  - type: textarea
+    id: additional
+    attributes:
+      label: Additional context
+      description: Loader logs, whether the key is under `assets/<modid>/lang/`, Minecraft version, etc.
+    validations:
+      required: false
