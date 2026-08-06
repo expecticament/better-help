@@ -9,18 +9,24 @@ import java.util.Set;
  * Metadata provided by a mod through its language files.
  */
 public final class ModMetadata {
-    private final @NotNull String modId;
+    private final @NotNull String id;
+    private final @NotNull String name;
     private final @Nullable String homepageUrl;
     private final @NotNull Set<ModCommandMetadata> commands;
 
-    public ModMetadata(@NotNull String modId, @Nullable String homepageUrl, @NotNull Set<ModCommandMetadata> commands) {
-        this.modId = modId;
-        this.homepageUrl = homepageUrl;
+    public ModMetadata(@NotNull String id, @NotNull String name, @Nullable String homepageUrl, @NotNull Set<ModCommandMetadata> commands) {
+        this.id = id;
+        this.name = name.isBlank() ? id : name;
+        this.homepageUrl = homepageUrl == null || homepageUrl.isBlank() ? null : homepageUrl;
         this.commands = Set.copyOf(commands);
     }
 
-    public @NotNull String getModId() {
-        return modId;
+    public @NotNull String getId() {
+        return id;
+    }
+
+    public @NotNull String getName() {
+        return name;
     }
 
     public @Nullable String getHomepageUrl() {

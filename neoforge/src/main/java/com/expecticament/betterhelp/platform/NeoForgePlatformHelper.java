@@ -11,10 +11,7 @@ import net.neoforged.neoforgespi.language.IModInfo;
 
 import java.io.Reader;
 import java.nio.charset.StandardCharsets;
-import java.util.HashSet;
-import java.util.LinkedHashMap;
-import java.util.Map;
-import java.util.Set;
+import java.util.*;
 
 public final class NeoForgePlatformHelper implements IPlatformHelper {
 
@@ -39,10 +36,13 @@ public final class NeoForgePlatformHelper implements IPlatformHelper {
 
         ModList.get().forEachModFile(modFile -> {
             Set<String> modIds = new HashSet<>();
+            Map<String, String> modNamesById = new HashMap<>();
+
             for (IModInfo modInfo : modFile.getModInfos()) {
                 String modId = modInfo.getModId();
                 if (!modId.equals(Constants.MOD_ID)) {
                     modIds.add(modId);
+                    modNamesById.put(modId, modInfo.getDisplayName());
                 }
             }
             if (modIds.isEmpty()) {
@@ -67,7 +67,7 @@ public final class NeoForgePlatformHelper implements IPlatformHelper {
                 }
 
                 String language = ModMetadataCollector.stripExtension(parts[3]);
-                ModMetadataCollector collector = collectors.computeIfAbsent(namespace, ModMetadataCollector::new);
+                ModMetadataCollector collector = collectors.computeIfAbsent(namespace, id -> new ModMetadataCollector(id, modNamesById.getOrDefault(id, id)));
 
                 try (Reader reader = resource.bufferedReader(StandardCharsets.UTF_8)) {
                     collector.mergeLanguageFile(language, reader);

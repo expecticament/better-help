@@ -43,7 +43,7 @@ public final class FabricPlatformHelper implements IPlatformHelper {
                 continue;
             }
 
-            ModMetadataCollector collector = new ModMetadataCollector(modId);
+            ModMetadataCollector collector = new ModMetadataCollector(modId, mod.getMetadata().getName());
 
             for (Path root : mod.getRootPaths()) {
                 Path langDir = root.resolve("assets").resolve(modId).resolve("lang");

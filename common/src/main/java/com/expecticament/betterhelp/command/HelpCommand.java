@@ -2,12 +2,9 @@ package com.expecticament.betterhelp.command;
 
 import com.expecticament.betterhelp.Constants;
 import com.expecticament.betterhelp.click.CustomClickActions;
+import com.expecticament.betterhelp.text.CommandHelpBuilder;
 import com.expecticament.betterhelp.text.Components;
 import com.expecticament.betterhelp.text.Pagination;
-import com.expecticament.betterhelp.metadata.ModCommandMetadata;
-import com.expecticament.betterhelp.metadata.ModMetadata;
-import com.expecticament.betterhelp.metadata.ModMetadataRegistry;
-import com.expecticament.betterhelp.translation.TranslationManager;
 import com.mojang.brigadier.Command;
 import com.mojang.brigadier.CommandDispatcher;
 import com.mojang.brigadier.ParseResults;
@@ -25,14 +22,11 @@ import com.mojang.brigadier.tree.LiteralCommandNode;
 import net.minecraft.commands.CommandBuildContext;
 import net.minecraft.commands.CommandSourceStack;
 import net.minecraft.commands.Commands;
-import net.minecraft.network.chat.ClickEvent;
 import net.minecraft.network.chat.Component;
-import net.minecraft.network.chat.HoverEvent;
 import net.minecraft.network.chat.MutableComponent;
 import net.minecraft.resources.Identifier;
 
 import java.lang.reflect.Field;
-import java.net.URI;
 import java.util.ArrayList;
 import java.util.Comparator;
 import java.util.List;
@@ -115,84 +109,24 @@ public final class HelpCommand {
                 .sorted(Comparator.naturalOrder())
                 .toList();
 
-        Component message = Component.literal("\n").append(Pagination.of(source, commands, page, PAGE_SIZE, (commandName) -> commandComponent(dispatcher, source, commandName), PAGE_CLICK_ID));
+        Component message = Component.literal("\n")
+                .append(Pagination.of(
+                        source,
+                        commands,
+                        page,
+                        PAGE_SIZE,
+                        (commandName) -> Components.intoBulletedListEntry(new CommandHelpBuilder(dispatcher, source, commandName, null)
+                                .withDescription()
+                                .withUsage(MAX_USAGE_COUNT)
+                                .withAttribution()
+                                .buildAsHover()
+                        ),
+                        PAGE_CLICK_ID)
+                );
 
         source.sendSystemMessage(message);
 
         return Command.SINGLE_SUCCESS;
-    }
-
-    private static Component commandComponent(CommandDispatcher<CommandSourceStack> dispatcher, CommandSourceStack source, String commandName) {
-        CommandNode<CommandSourceStack> node = dispatcher.getRoot().getChild(commandName);
-        CommandNode<CommandSourceStack> redirect = node.getRedirect();
-        ClickEvent clickEvent = new ClickEvent.SuggestCommand("/" + commandName + " ");
-
-        Component commandNameComponent;
-        MutableComponent hoverComponent = Component.empty();
-
-        if (redirect == null) {
-            commandNameComponent = Component.literal("/" + commandName).setStyle(Constants.STYLE_COMMAND_NAME);
-            hoverComponent.append(commandNameComponent);
-
-        } else {
-            String redirectName = redirect.getName();
-            commandNameComponent = aliasComponent(commandName, redirectName);
-            hoverComponent
-                    .append(commandNameComponent)
-                    .append("\n")
-                    .append(Component.literal(TranslationManager.translate(source, "%s.commands.help.alias_of".formatted(Constants.MOD_ID))).setStyle(Constants.STYLE_BODY))
-                    .append(Component.literal(" /" + redirectName + ". ").setStyle(Constants.STYLE_BODY));
-        }
-
-        String descriptionCommandName = redirect != null ? redirect.getName() : commandName;
-        List<String> descriptionPath = List.of(descriptionCommandName);
-        ModCommandMetadata modCommandMetadata = ModMetadataRegistry.getCommandMetadata(descriptionCommandName);
-        String descriptionText = ModMetadataRegistry.getDescription(modCommandMetadata, source, descriptionPath);
-        if (descriptionText != null) {
-            hoverComponent
-                    .append("\n")
-                    .append(Component.literal(descriptionText).setStyle(Constants.STYLE_BODY));
-        }
-
-        Map<CommandNode<CommandSourceStack>, String> usages = dispatcher.getSmartUsage(node, source);
-        if (!usages.isEmpty()) {
-            MutableComponent usagesComponent = Component.empty().setStyle(Constants.STYLE_FADED);
-            int count = 1;
-            for (String usage : usages.values()) {
-                if (count > MAX_USAGE_COUNT) {
-                    usagesComponent.append("\n...");
-                    break;
-                }
-
-                usagesComponent.append(Component.literal("\n/" + commandName + " " + usage));
-
-                count++;
-            }
-
-            hoverComponent
-                    .append("\n")
-                    .append(usagesComponent);
-        }
-
-        if (modCommandMetadata != null && ModMetadataRegistry.hasModDescription(modCommandMetadata, source, descriptionPath)) {
-            hoverComponent
-                    .append("\n\n")
-                    .append(Component.literal(Constants.SYMBOL_INFO + " ").setStyle(Constants.STYLE_FADED))
-                    .append(Component.literal(TranslationManager.translate(source, "%s.commands.help.from_mod".formatted(Constants.MOD_ID))).setStyle(Constants.STYLE_FADED))
-                    .append(" ")
-                    .append(Component.literal(modCommandMetadata.getModId()).setStyle(Constants.STYLE_SECONDARY));
-        }
-
-        HoverEvent hoverEvent = new HoverEvent.ShowText(hoverComponent);
-
-        return Components.intoBulletedListEntry(commandNameComponent.copy().setStyle(Constants.STYLE_COMMAND_NAME.withClickEvent(clickEvent).withHoverEvent(hoverEvent)));
-    }
-
-    private static MutableComponent aliasComponent(String commandName, String redirectName) {
-        return Component.empty()
-                .append(Component.literal("/" + commandName).setStyle(Constants.STYLE_COMMAND_NAME))
-                .append(Component.literal(" -> ").setStyle(Constants.STYLE_FADED))
-                .append(Component.literal("/" + redirectName).setStyle(Constants.STYLE_COMMAND_NAME));
     }
 
     private static int showCommandHelp(CommandSourceStack source, String commandInput) throws CommandSyntaxException {
@@ -211,72 +145,22 @@ public final class HelpCommand {
 
         CommandNode<CommandSourceStack> rootNode = parsedNodes.getFirst().getNode();
         CommandNode<CommandSourceStack> redirect = rootNode.getRedirect();
-        String parsedPath = parsedCommandPath(input, parsedNodes);
 
-        MutableComponent message = Component.empty().append("\n");
-        message.append(Component.literal("/" + parsedPath).setStyle(Constants.STYLE_COMMAND_NAME));
-
-        if (redirect != null) {
-            message.append("\n")
-                    .append(Component.literal(TranslationManager.translate(source, Constants.MOD_ID + ".commands.help.alias_of")).setStyle(Constants.STYLE_BODY))
-                    .append(Component.literal(" /" + redirect.getName() + ".").setStyle(Constants.STYLE_BODY));
-        }
-
+        String commandName = rootNode.getName();
         List<String> descriptionPath = descriptionPath(parsedNodes, redirect);
-        ModCommandMetadata modCommandMetadata = ModMetadataRegistry.getCommandMetadata(descriptionPath.getFirst());
-        String descriptionText = ModMetadataRegistry.getDescription(modCommandMetadata, source, descriptionPath);
-        if (descriptionText != null) {
-            message
-                    .append("\n")
-                    .append(Component.literal(descriptionText).setStyle(Constants.STYLE_BODY));
-        }
+        List<String> pathSegments = descriptionPath.size() > 1 ? descriptionPath.subList(1, descriptionPath.size()) : List.of();
 
-        CommandNode<CommandSourceStack> usageNode = parsedNodes.getLast().getNode();
-        if (usageNode.getRedirect() != null) {
-            usageNode = usageNode.getRedirect();
-        }
-
-        Map<CommandNode<CommandSourceStack>, String> usages = dispatcher.getSmartUsage(usageNode, source);
-        if (!usages.isEmpty()) {
-            message.append("\n\n")
-                    .append(Component.literal(TranslationManager.translate(source, Constants.MOD_ID + ".commands.help.usage")).setStyle(Constants.STYLE_PRIMARY));
-
-            String usagePrefix = "/" + parsedPath;
-            int count = 1;
-            for (String usage : usages.values()) {
-                if (count > MAX_USAGE_COUNT) {
-                    message.append(Component.literal("\n...").setStyle(Constants.STYLE_FADED));
-                    break;
-                }
-
-                message
-                        .append("\n")
-                        .append(Components.intoBulletedListEntry(Component.literal(usagePrefix + " " + usage)));
-                count++;
-            }
-        }
-
-        if (modCommandMetadata != null && ModMetadataRegistry.hasModDescription(modCommandMetadata, source, descriptionPath)) {
-            String modId = modCommandMetadata.getModId();
-            ModMetadata metadata = ModMetadataRegistry.getModMetadata(modId);
-            String homepage = metadata != null ? metadata.getHomepageUrl() : null;
-            message.append("\n\n")
-                    .append(Component.literal(Constants.SYMBOL_INFO + " ").setStyle(Constants.STYLE_FADED))
-                    .append(Component.literal(TranslationManager.translate(source, Constants.MOD_ID + ".commands.help.from_mod")).setStyle(Constants.STYLE_FADED))
-                    .append(" ")
-                    .append(homepage != null && !homepage.isBlank()
-                            ? Components.link(source, modId, URI.create(homepage), "%s.commands.help.homepage_hover".formatted(Constants.MOD_ID))
-                            : Component.literal(modId).setStyle(Constants.STYLE_SECONDARY));
-        }
+        MutableComponent message = Component.literal("\n").append(
+                new CommandHelpBuilder(dispatcher, source, commandName, pathSegments)
+                        .withDescription()
+                        .withUsage(MAX_USAGE_COUNT)
+                        .withAttribution()
+                        .buildAsBlock()
+        );
 
         source.sendSystemMessage(message);
 
         return Command.SINGLE_SUCCESS;
-    }
-
-    private static String parsedCommandPath(String input, List<ParsedCommandNode<CommandSourceStack>> parsedNodes) {
-        int end = parsedNodes.getLast().getRange().getEnd();
-        return input.substring(0, Math.min(end, input.length())).trim();
     }
 
     private static List<String> descriptionPath(List<ParsedCommandNode<CommandSourceStack>> parsedNodes, CommandNode<CommandSourceStack> redirect) {
@@ -285,6 +169,7 @@ public final class HelpCommand {
         for (int i = 1; i < parsedNodes.size(); i++) {
             segments.add(parsedNodes.get(i).getNode().getName());
         }
+
         return segments;
     }
 }
