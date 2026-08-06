@@ -30,7 +30,8 @@ public final class ModMetadataCollector {
     private static final String COMMANDS_PREFIX = "commands.";
     private static final String DESCRIPTION_SUFFIX = ".description";
 
-    private final @NotNull String modId;
+    private final @NotNull String id;
+    private final @NotNull String name;
     private @Nullable String homepageUrl;
 
     /**
@@ -43,10 +44,12 @@ public final class ModMetadataCollector {
     /**
      * Creates a collector for a mod.
      *
-     * @param modId The mod id (must match namespace ({@code assets/<modId>/lang/...})).
+     * @param modId   The mod id (must match namespace ({@code assets/<modId>/lang/...})).
+     * @param modName The mod name.
      */
-    public ModMetadataCollector(@NotNull String modId) {
-        this.modId = modId;
+    public ModMetadataCollector(@NotNull String modId, @NotNull String modName) {
+        this.id = modId;
+        this.name = modName;
     }
 
     /**
@@ -75,14 +78,14 @@ public final class ModMetadataCollector {
                 continue;
             }
 
-            if (key.equals(HOMEPAGE_KEY + "." + modId) || key.equals(HOMEPAGE_KEY)) {
+            if (key.equals(HOMEPAGE_KEY + "." + id) || key.equals(HOMEPAGE_KEY)) {
                 if (homepageUrl == null) {
                     homepageUrl = value;
                 }
                 continue;
             }
 
-            String prefix = modId + ".";
+            String prefix = id + ".";
             if (key.startsWith(prefix)) {
                 key = key.substring(prefix.length());
             }
@@ -124,7 +127,7 @@ public final class ModMetadataCollector {
                 }
             });
             if (!cleaned.isEmpty()) {
-                commands.add(new ModCommandMetadata(commandName, modId, cleaned));
+                commands.add(new ModCommandMetadata(commandName, id, cleaned));
             }
         });
 
@@ -132,7 +135,7 @@ public final class ModMetadataCollector {
             return null;
         }
 
-        return new ModMetadata(modId, homepageUrl, commands);
+        return new ModMetadata(id, name, homepageUrl, commands);
     }
 
     /**
