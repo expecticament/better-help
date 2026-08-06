@@ -2,7 +2,6 @@ package com.expecticament.betterhelp;
 
 import net.minecraft.ChatFormatting;
 import net.minecraft.network.chat.Style;
-import net.minecraft.network.chat.TextColor;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -21,7 +20,7 @@ public final class Constants {
 
     public static final Style STYLE_LINK = STYLE_SECONDARY.withUnderlined(true);
 
-    public static final Style STYLE_COMMAND_NAME = Style.EMPTY.withColor(TextColor.GREEN);
+    public static final Style STYLE_COMMAND_NAME = Style.EMPTY.withColor(ChatFormatting.GREEN);
 
     public static final String SYMBOL_INFO = "ℹ";
 
@@ -37,5 +36,5 @@ public final class Constants {
     public static final String SYMBOL_BUTTON_PREFIX = "[", SYMBOL_BUTTON_SUFFIX = "]", SYMBOL_BUTTON_SEPARATOR = " ";
 
     public static final String SYMBOL_BULLET_POINT = "• ";
-    public static final Style STYLE_LIST_ENTRY = Style.EMPTY.withColor(TextColor.YELLOW);
+    public static final Style STYLE_LIST_ENTRY = Style.EMPTY.withColor(ChatFormatting.YELLOW);
 }
