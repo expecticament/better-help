@@ -1,9 +1,10 @@
 {
   "modmenu.descriptionTranslation.betterhelp": "Заменяет /help на более понятный интерактивный список со страницами. Добавляет описания команд и аргументов, а также необязательные метаданные из других модов.",
 
-  "betterhelp.commands.help.alias_of": "Псевдоним",
   "betterhelp.commands.help.from_mod": "Эта команда из мода",
   "betterhelp.commands.help.usage": "Использование:",
+  "betterhelp.commands.help.alias_of": "Псевдоним",
+  "betterhelp.commands.help.aliases": "Псевдонимы:",
   "betterhelp.commands.help.homepage_hover": "Нажмите, чтобы открыть страницу мода",
 
   "betterhelp.pagination.previous": "Предыдущая страница",
@@ -139,5 +140,5 @@
 
   "commands.whitelist.description": "Управляет белым списком сервера.",
   "commands.worldborder.description": "Управляет границей мира.",
-  "commands.xp.description": "Управляет опытом или запрашивает его."
+  "commands.xp.description": "Управляет опытом или запрашивает его.",
 }

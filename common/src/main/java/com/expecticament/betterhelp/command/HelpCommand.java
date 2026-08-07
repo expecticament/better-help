@@ -9,6 +9,7 @@ import com.mojang.brigadier.Command;
 import com.mojang.brigadier.CommandDispatcher;
 import com.mojang.brigadier.ParseResults;
 import com.mojang.brigadier.arguments.StringArgumentType;
+import com.mojang.brigadier.context.CommandContextBuilder;
 import com.mojang.brigadier.context.ParsedCommandNode;
 import com.mojang.brigadier.context.StringRange;
 import com.mojang.brigadier.exceptions.CommandSyntaxException;
@@ -27,10 +28,7 @@ import net.minecraft.network.chat.MutableComponent;
 import net.minecraft.resources.Identifier;
 
 import java.lang.reflect.Field;
-import java.util.ArrayList;
-import java.util.Comparator;
-import java.util.List;
-import java.util.Map;
+import java.util.*;
 
 public final class HelpCommand {
     public static final Identifier PAGE_CLICK_ID = Identifier.fromNamespaceAndPath(Constants.MOD_ID, "help_page");
@@ -103,8 +101,11 @@ public final class HelpCommand {
 
     private static int showPage(CommandSourceStack source, int page) {
         CommandDispatcher<CommandSourceStack> dispatcher = source.getServer().getCommands().getDispatcher();
+
+        Map<String, List<String>> aliasesByCommand = getAliasesByCommand(dispatcher, source);
+
         List<String> commands = dispatcher.getRoot().getChildren().stream()
-                .filter(node -> node.canUse(source))
+                .filter(node -> node.getRedirect() == null && node.canUse(source))
                 .map(CommandNode::getName)
                 .sorted(Comparator.naturalOrder())
                 .toList();
@@ -115,8 +116,9 @@ public final class HelpCommand {
                         commands,
                         page,
                         PAGE_SIZE,
-                        (commandName) -> Components.intoBulletedListEntry(new CommandHelpBuilder(dispatcher, source, commandName, null)
+                        (commandName) -> Components.intoBulletedListEntry(new CommandHelpBuilder(dispatcher, source, commandName, aliasesByCommand.get(commandName), null, null)
                                 .withDescription()
+                                .withAliases(true)
                                 .withUsage(MAX_USAGE_COUNT)
                                 .withAttribution()
                                 .buildAsHover()
@@ -138,7 +140,10 @@ public final class HelpCommand {
         }
 
         ParseResults<CommandSourceStack> parse = dispatcher.parse(input, source);
-        List<ParsedCommandNode<CommandSourceStack>> parsedNodes = parse.getContext().getNodes();
+        List<ParsedCommandNode<CommandSourceStack>> parsedNodes = new ArrayList<>();
+        for (CommandContextBuilder<CommandSourceStack> current = parse.getContext(); current != null; current = current.getChild()) {
+            parsedNodes.addAll(current.getNodes());
+        }
         if (parsedNodes.isEmpty() || !parsedNodes.getFirst().getNode().canUse(source)) {
             throw ERROR_FAILED.create();
         }
@@ -150,9 +155,12 @@ public final class HelpCommand {
         List<String> descriptionPath = descriptionPath(parsedNodes, redirect);
         List<String> pathSegments = descriptionPath.size() > 1 ? descriptionPath.subList(1, descriptionPath.size()) : List.of();
 
+        Map<String, List<String>> aliasesByCommand = getAliasesByCommand(dispatcher, source);
+
         MutableComponent message = Component.literal("\n").append(
-                new CommandHelpBuilder(dispatcher, source, commandName, pathSegments)
+                new CommandHelpBuilder(dispatcher, source, commandName, aliasesByCommand.get(redirect != null ? redirect.getName() : commandName), pathSegments, parsedCommandPath(input, parsedNodes))
                         .withDescription()
+                        .withAliases(false)
                         .withUsage(MAX_USAGE_COUNT)
                         .withAttribution()
                         .buildAsBlock()
@@ -171,5 +179,27 @@ public final class HelpCommand {
         }
 
         return segments;
+    }
+
+    private static String parsedCommandPath(String input, List<ParsedCommandNode<CommandSourceStack>> parsedNodes) {
+        int end = parsedNodes.getLast().getRange().getEnd();
+        return input.substring(0, Math.min(end, input.length())).trim();
+    }
+
+    private static Map<String, List<String>> getAliasesByCommand(CommandDispatcher<CommandSourceStack> dispatcher, CommandSourceStack source) {
+        Map<String, List<String>> map = new HashMap<>();
+
+        for (CommandNode<CommandSourceStack> child : dispatcher.getRoot().getChildren()) {
+            CommandNode<CommandSourceStack> redirect = child.getRedirect();
+            if (redirect == null || !child.canUse(source)) {
+                continue;
+            }
+
+            map
+                    .computeIfAbsent(redirect.getName(), ignored -> new ArrayList<>())
+                    .add(child.getName());
+        }
+
+        return Collections.unmodifiableMap(map);
     }
 }
