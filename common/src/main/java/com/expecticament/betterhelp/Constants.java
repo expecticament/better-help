@@ -2,6 +2,7 @@ package com.expecticament.betterhelp;
 
 import net.minecraft.ChatFormatting;
 import net.minecraft.network.chat.Style;
+import net.minecraft.network.chat.TextColor;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -21,6 +22,8 @@ public final class Constants {
     public static final Style STYLE_LINK = STYLE_SECONDARY.withUnderlined(true);
 
     public static final Style STYLE_COMMAND_NAME = Style.EMPTY.withColor(ChatFormatting.GREEN);
+
+    public static final Style STYLE_ALIAS = Style.EMPTY.withColor(TextColor.fromRgb(0x8CB3FF));
 
     public static final String SYMBOL_INFO = "ℹ";
 

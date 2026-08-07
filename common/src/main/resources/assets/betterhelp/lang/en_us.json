@@ -1,9 +1,10 @@
 {
   "modmenu.descriptionTranslation.betterhelp": "Replaces /help with a clearer, interactable, paginated list. Adds descriptions for commands and arguments, plus optional metadata from other mods.",
 
-  "betterhelp.commands.help.alias_of": "Alias of",
   "betterhelp.commands.help.from_mod": "This command is from",
   "betterhelp.commands.help.usage": "Usage:",
+  "betterhelp.commands.help.alias_of": "Alias of",
+  "betterhelp.commands.help.aliases": "Aliases:",
   "betterhelp.commands.help.homepage_hover": "Click to visit the mod's homepage",
 
   "betterhelp.pagination.previous": "Previous page",
