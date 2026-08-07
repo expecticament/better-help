@@ -102,21 +102,6 @@ public final class ModMetadataRegistry {
     }
 
     /**
-     * Checks whether the command metadata has description for this path.
-     * <p>
-     * Built-in Better /help descriptions do not count.
-     *
-     * @param command      The command metadata to check.
-     * @param source       The command source. Used to determine the player's language.
-     * @param pathSegments The command path pieces from Brigadier node names, for example
-     *                     {@code ["advancement", "grant", "targets", "everything"]}.
-     * @return {@code true} if this command provides a description for the path, {@code false} otherwise.
-     */
-    public static boolean hasModDescription(@NotNull ModCommandMetadata command, @NotNull CommandSourceStack source, @NotNull List<String> pathSegments) {
-        return findModDescription(command, source, pathSegments) != null;
-    }
-
-    /**
      * Finds a description in the command's translations (player language,
      * then the fallback language).
      *

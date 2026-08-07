@@ -46,12 +46,7 @@ public final class CommandHelpBuilder {
         this.commandMetadata = ModMetadataRegistry.getCommandMetadata(getBaseCommandName());
         this.pathSegments = pathSegments != null ? List.copyOf(pathSegments) : List.of();
         this.displayPath = "/" + (displayPath != null ? displayPath : commandName);
-
-        if (commandMetadata != null && ModMetadataRegistry.hasModDescription(commandMetadata, source, List.of(getBaseCommandName()))) {
-            this.modMetadata = ModMetadataRegistry.getModMetadata(commandMetadata.getModId());
-        } else {
-            this.modMetadata = null;
-        }
+        this.modMetadata = commandMetadata != null ? ModMetadataRegistry.getModMetadata(commandMetadata.getModId()) : null;
     }
 
     public @NotNull CommandHelpBuilder withDescription() {
@@ -62,6 +57,7 @@ public final class CommandHelpBuilder {
                     .append(new CommandHelpBuilder(dispatcher, source, getBaseCommandName(), aliases, null, null).withAliases(false).buildAsHover())
                     .append(Component.literal(". ").setStyle(Constants.STYLE_BODY));
         }
+
         String descriptionText = ModMetadataRegistry.getDescription(commandMetadata, source, getFullPath(getBaseCommandName()));
         if (descriptionText != null) {
             if (descriptionComponent == null) {
@@ -69,6 +65,7 @@ public final class CommandHelpBuilder {
             }
             descriptionComponent.append(Component.literal(descriptionText).setStyle(Constants.STYLE_BODY));
         }
+
         return this;
     }
 
