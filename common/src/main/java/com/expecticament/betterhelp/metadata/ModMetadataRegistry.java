@@ -7,10 +7,7 @@ import net.minecraft.commands.CommandSourceStack;
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
 
-import java.util.Collections;
-import java.util.LinkedHashMap;
-import java.util.List;
-import java.util.Map;
+import java.util.*;
 
 /**
  * Holds and looks up {@link ModMetadata} / {@link ModCommandMetadata} scanned from other mods.
@@ -47,9 +44,18 @@ public final class ModMetadataRegistry {
             }
         }
 
+        int byModIdSize = byModId.size();
+        int byCommandSize = byCommand.size();
+
+        // Attribute /help to Better /help
+        ModCommandMetadata helpMetadata = new ModCommandMetadata("help", Constants.MOD_ID, Map.of());
+        ModMetadata self = new ModMetadata(Constants.MOD_ID, Constants.MOD_NAME, "https://betterhelp.expecticament.com", Set.of(helpMetadata));
+        byModId.put(Constants.MOD_ID, self);
+        byCommand.put("help", helpMetadata);
+
         BY_MOD_ID = Collections.unmodifiableMap(byModId);
         BY_COMMAND = Collections.unmodifiableMap(byCommand);
-        Constants.LOGGER.info("Loaded metadata from {} mods ({} commands)", BY_MOD_ID.size(), BY_COMMAND.size());
+        Constants.LOGGER.info("Loaded metadata from {} other mods ({} commands)", byModIdSize, byCommandSize);
     }
 
     /**
