@@ -90,7 +90,7 @@ Examples from **Better /help**:
 <details>
 <summary>Homepage link</summary>
 
-When set, the mod id in `/help <command...>` output can become a clickable link:
+When set, the mod name in `/help <command...>` output can become a clickable link:
 
 ```json
 {
