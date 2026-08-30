@@ -5,6 +5,7 @@ import com.expecticament.betterhelp.click.CustomClickActions;
 import com.expecticament.betterhelp.text.CommandHelpBuilder;
 import com.expecticament.betterhelp.text.Components;
 import com.expecticament.betterhelp.text.Pagination;
+import com.expecticament.betterhelp.util.CommandDispatcherUtil;
 import com.mojang.brigadier.Command;
 import com.mojang.brigadier.CommandDispatcher;
 import com.mojang.brigadier.ParseResults;
@@ -17,9 +18,7 @@ import com.mojang.brigadier.exceptions.SimpleCommandExceptionType;
 import com.mojang.brigadier.suggestion.Suggestion;
 import com.mojang.brigadier.suggestion.SuggestionProvider;
 import com.mojang.brigadier.suggestion.Suggestions;
-import com.mojang.brigadier.tree.ArgumentCommandNode;
 import com.mojang.brigadier.tree.CommandNode;
-import com.mojang.brigadier.tree.LiteralCommandNode;
 import net.minecraft.commands.CommandBuildContext;
 import net.minecraft.commands.CommandSourceStack;
 import net.minecraft.commands.Commands;
@@ -27,39 +26,19 @@ import net.minecraft.network.chat.Component;
 import net.minecraft.network.chat.MutableComponent;
 import net.minecraft.resources.Identifier;
 
-import java.lang.reflect.Field;
 import java.util.*;
 
 public final class HelpCommand {
-    public static final Identifier PAGE_CLICK_ID = Identifier.fromNamespaceAndPath(Constants.MOD_ID, "help_page");
+    private static final Identifier PAGE_CLICK_ID = Identifier.fromNamespaceAndPath(Constants.MOD_ID, "help_page");
     private static final int PAGE_SIZE = 17;
     private static final int MAX_USAGE_COUNT = 25;
 
     private static final SimpleCommandExceptionType ERROR_FAILED = new SimpleCommandExceptionType(Component.translatable("commands.help.failed"));
 
-    @SuppressWarnings("unchecked")
     public static void register(CommandDispatcher<CommandSourceStack> dispatcher, CommandBuildContext buildContext, Commands.CommandSelection selection) {
         String commandName = "help";
 
-        try {
-            CommandNode<CommandSourceStack> root = dispatcher.getRoot();
-
-            Field childrenField = CommandNode.class.getDeclaredField("children");
-            Field literalsField = CommandNode.class.getDeclaredField("literals");
-            Field argumentsField = CommandNode.class.getDeclaredField("arguments");
-            childrenField.setAccessible(true);
-            literalsField.setAccessible(true);
-            argumentsField.setAccessible(true);
-
-            Map<String, CommandNode<CommandSourceStack>> children = (Map<String, CommandNode<CommandSourceStack>>) childrenField.get(root);
-            Map<String, LiteralCommandNode<CommandSourceStack>> literals = (Map<String, LiteralCommandNode<CommandSourceStack>>) literalsField.get(root);
-            Map<String, ArgumentCommandNode<CommandSourceStack, ?>> arguments = (Map<String, ArgumentCommandNode<CommandSourceStack, ?>>) argumentsField.get(root);
-            children.remove(commandName);
-            literals.remove(commandName);
-            arguments.remove(commandName);
-        } catch (ReflectiveOperationException e) {
-            Constants.LOGGER.error("Failed to unregister vanilla /{} command", commandName, e);
-        }
+        CommandDispatcherUtil.unregisterCommand(dispatcher, commandName);
 
         CustomClickActions.register(PAGE_CLICK_ID, (player, tag) -> showPage(player.createCommandSourceStack(), Pagination.readPage(tag)));
 
@@ -102,7 +81,7 @@ public final class HelpCommand {
     private static int showPage(CommandSourceStack source, int page) {
         CommandDispatcher<CommandSourceStack> dispatcher = source.getServer().getCommands().getDispatcher();
 
-        Map<String, List<String>> aliasesByCommand = getAliasesByCommand(dispatcher, source);
+        Map<String, List<String>> aliasesByCommand = CommandDispatcherUtil.getAliasesByCommand(dispatcher, source);
 
         List<String> commands = dispatcher.getRoot().getChildren().stream()
                 .filter(node -> node.getRedirect() == null && node.canUse(source))
@@ -155,7 +134,7 @@ public final class HelpCommand {
         List<String> descriptionPath = descriptionPath(parsedNodes, redirect);
         List<String> pathSegments = descriptionPath.size() > 1 ? descriptionPath.subList(1, descriptionPath.size()) : List.of();
 
-        Map<String, List<String>> aliasesByCommand = getAliasesByCommand(dispatcher, source);
+        Map<String, List<String>> aliasesByCommand = CommandDispatcherUtil.getAliasesByCommand(dispatcher, source);
 
         MutableComponent message = Component.literal("\n").append(
                 new CommandHelpBuilder(dispatcher, source, commandName, aliasesByCommand.get(redirect != null ? redirect.getName() : commandName), pathSegments, parsedCommandPath(input, parsedNodes))
@@ -184,22 +163,5 @@ public final class HelpCommand {
     private static String parsedCommandPath(String input, List<ParsedCommandNode<CommandSourceStack>> parsedNodes) {
         int end = parsedNodes.getLast().getRange().getEnd();
         return input.substring(0, Math.min(end, input.length())).trim();
-    }
-
-    private static Map<String, List<String>> getAliasesByCommand(CommandDispatcher<CommandSourceStack> dispatcher, CommandSourceStack source) {
-        Map<String, List<String>> map = new HashMap<>();
-
-        for (CommandNode<CommandSourceStack> child : dispatcher.getRoot().getChildren()) {
-            CommandNode<CommandSourceStack> redirect = child.getRedirect();
-            if (redirect == null || !child.canUse(source)) {
-                continue;
-            }
-
-            map
-                    .computeIfAbsent(redirect.getName(), ignored -> new ArrayList<>())
-                    .add(child.getName());
-        }
-
-        return Collections.unmodifiableMap(map);
     }
 }
