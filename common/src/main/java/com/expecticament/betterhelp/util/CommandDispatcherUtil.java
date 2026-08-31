@@ -11,8 +11,18 @@ import org.jetbrains.annotations.NotNull;
 import java.lang.reflect.Field;
 import java.util.*;
 
+/**
+ * Helpers for working with Brigadier's {@link CommandDispatcher}.
+ */
 public final class CommandDispatcherUtil {
 
+    /**
+     * Removes a root command from the root node's {@code children}, {@code literals},
+     * and {@code arguments} maps via reflection.
+     *
+     * @param dispatcher the dispatcher whose root should be modified.
+     * @param name       the root command name to remove.
+     */
     @SuppressWarnings("unchecked")
     public static void unregisterCommand(@NotNull CommandDispatcher<CommandSourceStack> dispatcher, @NotNull String name) {
         try {
@@ -36,6 +46,16 @@ public final class CommandDispatcherUtil {
         }
     }
 
+    /**
+     * Builds a {@code command} - {@code aliases} map.
+     * <p>
+     * Forks, self-redirects, commands without aliases, and nodes that
+     * the {@code source} can't use are not included.
+     *
+     * @param dispatcher the dispatcher to scan.
+     * @param source     used for {@link CommandNode#canUse} checks.
+     * @return an unmodifiable {@code command} - {@code aliases} map.
+     */
     public static @NotNull Map<String, List<String>> getAliasesByCommand(@NotNull CommandDispatcher<CommandSourceStack> dispatcher, @NotNull CommandSourceStack source) {
         Map<String, List<String>> map = new HashMap<>();
         CommandNode<CommandSourceStack> root = dispatcher.getRoot();
