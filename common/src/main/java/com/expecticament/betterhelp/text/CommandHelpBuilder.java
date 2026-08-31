@@ -18,23 +18,23 @@ import java.util.List;
 import java.util.Map;
 
 public final class CommandHelpBuilder {
-    private final @NotNull CommandDispatcher<CommandSourceStack> dispatcher;
-    private final @Nullable CommandNode<CommandSourceStack> commandNode;
-    private final @Nullable CommandNode<CommandSourceStack> redirectNode;
-    private final @NotNull CommandSourceStack source;
-    private final @NotNull String commandName;
-    private final @NotNull List<String> aliases;
-    private final @Nullable ModCommandMetadata commandMetadata;
-    private final @Nullable ModMetadata modMetadata;
-    private final @NotNull List<String> pathSegments;
-    private final @NotNull String displayPath;
+    private final CommandDispatcher<CommandSourceStack> dispatcher;
+    private final CommandNode<CommandSourceStack> commandNode;
+    private final CommandNode<CommandSourceStack> redirectNode;
+    private final CommandSourceStack source;
+    private final String commandName;
+    private final List<String> aliases;
+    private final ModCommandMetadata commandMetadata;
+    private final ModMetadata modMetadata;
+    private final List<String> pathSegments;
+    private final String displayPath;
 
-    private @Nullable MutableComponent descriptionComponent;
-    private @Nullable Map<CommandNode<CommandSourceStack>, String> usage;
-    private int usageMaxLines = 0;
-    private @Nullable Component aliasListComponent;
+    private MutableComponent descriptionComponent;
+    private Map<CommandNode<CommandSourceStack>, String> usage;
+    private int usageMaxLines;
+    private Component aliasListComponent;
     private boolean aliasesAsNumber;
-    private @Nullable Component modAttributionComponent;
+    private Component modAttributionComponent;
 
     public CommandHelpBuilder(@NotNull CommandDispatcher<CommandSourceStack> dispatcher, @NotNull CommandSourceStack source, @NotNull String commandName, @Nullable List<String> aliases, @Nullable List<String> pathSegments, @Nullable String displayPath) {
         this.dispatcher = dispatcher;

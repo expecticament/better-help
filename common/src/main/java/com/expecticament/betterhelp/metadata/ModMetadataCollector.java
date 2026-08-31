@@ -30,16 +30,16 @@ public final class ModMetadataCollector {
     private static final String COMMANDS_PREFIX = "commands.";
     private static final String DESCRIPTION_SUFFIX = ".description";
 
-    private final @NotNull String id;
-    private final @NotNull String name;
-    private @Nullable String homepageUrl;
+    private final String id;
+    private final String name;
+    private String homepageUrl;
 
     /**
      * Description keys grouped by command, then language.
      * <p>
      * {@code commandName} - ({@code language} - ({@code description key} - {@code text})).
      */
-    private final @NotNull Map<String, Map<String, Map<String, String>>> commandDescriptions = new HashMap<>();
+    private final Map<String, Map<String, Map<String, String>>> commandDescriptions = new HashMap<>();
 
     /**
      * Creates a collector for a mod.

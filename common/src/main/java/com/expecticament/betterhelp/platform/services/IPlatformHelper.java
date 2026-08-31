@@ -1,6 +1,7 @@
 package com.expecticament.betterhelp.platform.services;
 
 import com.expecticament.betterhelp.metadata.ModMetadata;
+import org.jetbrains.annotations.NotNull;
 
 import java.util.Map;
 
@@ -11,7 +12,7 @@ public interface IPlatformHelper {
      *
      * @return The name of the current platform.
      */
-    String getPlatformName();
+    @NotNull String getPlatformName();
 
     /**
      * Checks if a mod with the given id is loaded.
@@ -35,5 +36,5 @@ public interface IPlatformHelper {
      *
      * @return An unmodifiable {@code modId} - {@code metadata} map.
      */
-    Map<String, ModMetadata> getModMetadata();
+    @NotNull Map<String, ModMetadata> getModMetadata();
 }

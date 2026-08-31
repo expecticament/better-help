@@ -10,9 +10,9 @@ import java.util.Objects;
  * Metadata for a command provided by a mod through its language files.
  */
 public final class ModCommandMetadata {
-    private final @NotNull String name;
-    private final @NotNull String modId;
-    private final @NotNull Map<String, Map<String, String>> descriptionTranslations;
+    private final String name;
+    private final String modId;
+    private final Map<String, Map<String, String>> descriptionTranslations;
 
     /**
      * @param name                     The command name.
