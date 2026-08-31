@@ -23,13 +23,13 @@ public final class Pagination {
     /**
      * Builds a paginated message from all entries.
      *
-     * @param source        Used for hover translations.
-     * @param entries       Full list, not just the current page.
-     * @param page          Page index starting from 1. Out of range values are clamped.
-     * @param pageSize      Max entries per page.
-     * @param entryRenderer Turns one entry into a component.
+     * @param source        used for hover translations.
+     * @param entries       full list, not just the current page.
+     * @param page          page index starting from 1. Out of range values are clamped.
+     * @param pageSize      max entries per page.
+     * @param entryRenderer turns one entry into a component.
      * @param pageClickId   {@link ClickEvent.Custom} id for page switches.
-     * @return Entries for the page, then controls if there is more than one page.
+     * @return entries for the page, then controls if there is more than one page.
      */
     public static <T> @NotNull Component of(@NotNull CommandSourceStack source, @NotNull List<T> entries, int page, int pageSize, @NotNull Function<T, Component> entryRenderer, @NotNull Identifier pageClickId) {
         if (pageSize < 1) {

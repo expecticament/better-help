@@ -15,9 +15,9 @@ public final class ModCommandMetadata {
     private final Map<String, Map<String, String>> descriptionTranslations;
 
     /**
-     * @param name                     The command name.
-     * @param modId                    The mod that owns this command metadata.
-     * @param descriptionTranslations  A {@code language} - ({@code translation key} - {@code text}) map.
+     * @param name                     the command name.
+     * @param modId                    the mod that owns this command metadata.
+     * @param descriptionTranslations  a {@code language} - ({@code translation key} - {@code text}) map.
      */
     public ModCommandMetadata(@NotNull String name, @NotNull String modId, @NotNull Map<String, Map<String, String>> descriptionTranslations) {
         this.name = name;

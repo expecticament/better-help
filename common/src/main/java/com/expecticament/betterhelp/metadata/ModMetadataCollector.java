@@ -44,8 +44,8 @@ public final class ModMetadataCollector {
     /**
      * Creates a collector for a mod.
      *
-     * @param modId   The mod id (must match namespace ({@code assets/<modId>/lang/...})).
-     * @param modName The mod name.
+     * @param modId   the mod id (must match namespace ({@code assets/<modId>/lang/...})).
+     * @param modName the mod name.
      */
     public ModMetadataCollector(@NotNull String modId, @NotNull String modName) {
         this.id = modId;
@@ -58,8 +58,8 @@ public final class ModMetadataCollector {
      * Blank values and unknown keys are skipped.
      * The already existing values always win.
      *
-     * @param language The language code of this file, for example {@code en_us}.
-     * @param reader   The open language JSON contents.
+     * @param language the language code of this file, for example {@code en_us}.
+     * @param reader   the open language JSON contents.
      */
     public void mergeLanguageFile(@NotNull String language, @NotNull Reader reader) {
         JsonObject json = GSON.fromJson(reader, JsonObject.class);
@@ -111,7 +111,7 @@ public final class ModMetadataCollector {
      * <p>
      * Returns {@code null} when this mod has no command descriptions.
      *
-     * @return Metadata for this mod, or {@code null} if nothing is found.
+     * @return metadata for this mod, or {@code null} if nothing is found.
      */
     public @Nullable ModMetadata build() {
         if (commandDescriptions.isEmpty()) {
@@ -141,7 +141,7 @@ public final class ModMetadataCollector {
     /**
      * Checks whether a lang key is a command description key.
      *
-     * @param key The translation key from a language file.
+     * @param key the translation key from a language file.
      * @return {@code true} if the key looks like {@code commands.(path).description}, {@code false} otherwise.
      */
     private static boolean isCommandDescriptionKey(@NotNull String key) {
@@ -157,8 +157,8 @@ public final class ModMetadataCollector {
      *   <li>{@code commands.example.targets.description} - {@code example}</li>
      * </ul>
      *
-     * @param key A command description key.
-     * @return The command name, or {@code null} if the path is empty.
+     * @param key a command description key.
+     * @return the command name, or {@code null} if the path is empty.
      */
     private static @Nullable String commandNameFromDescriptionKey(@NotNull String key) {
         String path = key.substring(COMMANDS_PREFIX.length(), key.length() - DESCRIPTION_SUFFIX.length());
@@ -175,8 +175,8 @@ public final class ModMetadataCollector {
      * <p>
      * Example: {@code en_us.json} becomes {@code en_us}.
      *
-     * @param fileName The file name, with or without an extension.
-     * @return The file name without an extension.
+     * @param fileName the file name, with or without an extension.
+     * @return the file name without an extension.
      */
     public static @NotNull String stripExtension(@NotNull String fileName) {
         int dotIndex = fileName.lastIndexOf('.');

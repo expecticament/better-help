@@ -61,8 +61,8 @@ public final class ModMetadataRegistry {
     /**
      * Returns metadata for a mod id, if that mod contributed any.
      *
-     * @param modId The mod to look up.
-     * @return That mod's metadata, or {@code null} if nothing is found.
+     * @param modId the mod to look up.
+     * @return that mod's metadata, or {@code null} if nothing is found.
      */
     public static @Nullable ModMetadata getModMetadata(@NotNull String modId) {
         return BY_MOD_ID.get(modId);
@@ -73,8 +73,8 @@ public final class ModMetadataRegistry {
      * <p>
      * When several mods document the same command, the first scanned mod wins.
      *
-     * @param commandName The command name.
-     * @return The command metadata, or {@code null} if no mod documented this command.
+     * @param commandName the command name.
+     * @return the command metadata, or {@code null} if no mod documented this command.
      */
     public static @Nullable ModCommandMetadata getCommandMetadata(@NotNull String commandName) {
         return BY_COMMAND.get(commandName);
@@ -86,11 +86,11 @@ public final class ModMetadataRegistry {
      * If {@code command} is present, its translations are tried first (player language,
      * then the fallback language). If nothing matches, Better /help built-ins are used.
      *
-     * @param command      The command metadata, or {@code null} to skip mod texts.
-     * @param source       The command source. Used to determine the player's language.
-     * @param pathSegments The command path pieces from Brigadier node names, for example
+     * @param command      the command metadata, or {@code null} to skip mod texts.
+     * @param source       the command source. Used to determine the player's language.
+     * @param pathSegments the command path pieces from Brigadier node names, for example
      *                     {@code ["advancement", "grant", "targets", "everything"]}.
-     * @return The description text, or {@code null} if nothing is found.
+     * @return the description text, or {@code null} if nothing is found.
      */
     public static @Nullable String getDescription(@Nullable ModCommandMetadata command, @NotNull CommandSourceStack source, @NotNull List<String> pathSegments) {
         if (pathSegments.isEmpty()) {
@@ -111,11 +111,11 @@ public final class ModMetadataRegistry {
      * Finds a description in the command's translations (player language,
      * then the fallback language).
      *
-     * @param command      The command to search.
-     * @param source       The command source. Used to determine the player's language.
-     * @param pathSegments The command path pieces from Brigadier node names, for example
+     * @param command      the command to search.
+     * @param source       the command source. Used to determine the player's language.
+     * @param pathSegments the command path pieces from Brigadier node names, for example
      *                     {@code ["advancement", "grant", "targets", "everything"]}.
-     * @return The description text, or {@code null} if this command has no matching key.
+     * @return the description text, or {@code null} if this command has no matching key.
      */
     private static @Nullable String findModDescription(@NotNull ModCommandMetadata command, @NotNull CommandSourceStack source, @NotNull List<String> pathSegments) {
         String language = TranslationManager.languageOf(source);
@@ -136,11 +136,11 @@ public final class ModMetadataRegistry {
     /**
      * Finds a description key in the command metadata for a language, trying longer paths first.
      *
-     * @param command      The command to search.
-     * @param language     The language code, for example {@code en_us}.
-     * @param pathSegments The command path pieces from Brigadier node names, for example
+     * @param command      the command to search.
+     * @param language     the language code, for example {@code en_us}.
+     * @param pathSegments the command path pieces from Brigadier node names, for example
      *                     {@code ["advancement", "grant", "targets", "everything"]}.
-     * @return The description text, or {@code null} if this command has no matching key.
+     * @return the description text, or {@code null} if this command has no matching key.
      */
     private static @Nullable String findDescription(@NotNull ModCommandMetadata command, @NotNull String language, @NotNull List<String> pathSegments) {
         Map<String, String> forLanguage = command.getDescriptionTranslations().get(language);
@@ -162,10 +162,10 @@ public final class ModMetadataRegistry {
     /**
      * Looks up a built-in Better /help description (most specific path first).
      *
-     * @param source       The command source. Used to determine the player's language.
-     * @param pathSegments The command path pieces from Brigadier node names, for example
+     * @param source       the command source. Used to determine the player's language.
+     * @param pathSegments the command path pieces from Brigadier node names, for example
      *                     {@code ["advancement", "grant", "targets", "everything"]}.
-     * @return The built-in description, or {@code null} if nothing is found.
+     * @return the built-in description, or {@code null} if nothing is found.
      */
     private static @Nullable String getBuiltinDescription(@NotNull CommandSourceStack source, @NotNull List<String> pathSegments) {
         String language = TranslationManager.languageOf(source);
