@@ -25,6 +25,8 @@ import net.minecraft.commands.Commands;
 import net.minecraft.network.chat.Component;
 import net.minecraft.network.chat.MutableComponent;
 import net.minecraft.resources.Identifier;
+import org.jetbrains.annotations.NotNull;
+import org.jetbrains.annotations.Nullable;
 
 import java.util.*;
 
@@ -35,7 +37,7 @@ public final class HelpCommand {
 
     private static final SimpleCommandExceptionType ERROR_FAILED = new SimpleCommandExceptionType(Component.translatable("commands.help.failed"));
 
-    public static void register(CommandDispatcher<CommandSourceStack> dispatcher, CommandBuildContext buildContext, Commands.CommandSelection selection) {
+    public static void register(@NotNull CommandDispatcher<CommandSourceStack> dispatcher, @NotNull CommandBuildContext buildContext, @NotNull Commands.CommandSelection selection) {
         String commandName = "help";
 
         CommandDispatcherUtil.unregisterCommand(dispatcher, commandName);
@@ -52,7 +54,7 @@ public final class HelpCommand {
         );
     }
 
-    private static SuggestionProvider<CommandSourceStack> suggestCommands(CommandDispatcher<CommandSourceStack> dispatcher) {
+    private static @NotNull SuggestionProvider<CommandSourceStack> suggestCommands(@NotNull CommandDispatcher<CommandSourceStack> dispatcher) {
         return (context, builder) -> {
             String remaining = builder.getRemaining();
             ParseResults<CommandSourceStack> parse = dispatcher.parse(remaining, context.getSource());
@@ -61,7 +63,7 @@ public final class HelpCommand {
         };
     }
 
-    private static Suggestions offsetSuggestions(Suggestions suggestions, int offset) {
+    private static @NotNull Suggestions offsetSuggestions(@NotNull Suggestions suggestions, int offset) {
         if (offset == 0 || suggestions.getList().isEmpty()) {
             return suggestions;
         }
@@ -74,11 +76,11 @@ public final class HelpCommand {
         );
     }
 
-    private static StringRange offsetRange(StringRange range, int offset) {
+    private static @NotNull StringRange offsetRange(@NotNull StringRange range, int offset) {
         return StringRange.between(range.getStart() + offset, range.getEnd() + offset);
     }
 
-    private static int showPage(CommandSourceStack source, int page) {
+    private static int showPage(@NotNull CommandSourceStack source, int page) {
         CommandDispatcher<CommandSourceStack> dispatcher = source.getServer().getCommands().getDispatcher();
 
         Map<String, List<String>> aliasesByCommand = CommandDispatcherUtil.getAliasesByCommand(dispatcher, source);
@@ -110,7 +112,7 @@ public final class HelpCommand {
         return Command.SINGLE_SUCCESS;
     }
 
-    private static int showCommandHelp(CommandSourceStack source, String commandInput) throws CommandSyntaxException {
+    private static int showCommandHelp(@NotNull CommandSourceStack source, @NotNull String commandInput) throws CommandSyntaxException {
         CommandDispatcher<CommandSourceStack> dispatcher = source.getServer().getCommands().getDispatcher();
 
         String input = commandInput.trim();
@@ -150,7 +152,7 @@ public final class HelpCommand {
         return Command.SINGLE_SUCCESS;
     }
 
-    private static List<String> descriptionPath(List<ParsedCommandNode<CommandSourceStack>> parsedNodes, CommandNode<CommandSourceStack> redirect) {
+    private static @NotNull List<String> descriptionPath(@NotNull List<ParsedCommandNode<CommandSourceStack>> parsedNodes, @Nullable CommandNode<CommandSourceStack> redirect) {
         List<String> segments = new ArrayList<>(parsedNodes.size());
         segments.add(redirect != null ? redirect.getName() : parsedNodes.getFirst().getNode().getName());
         for (int i = 1; i < parsedNodes.size(); i++) {
@@ -160,7 +162,7 @@ public final class HelpCommand {
         return segments;
     }
 
-    private static String parsedCommandPath(String input, List<ParsedCommandNode<CommandSourceStack>> parsedNodes) {
+    private static @NotNull String parsedCommandPath(@NotNull String input, @NotNull List<ParsedCommandNode<CommandSourceStack>> parsedNodes) {
         int end = parsedNodes.getLast().getRange().getEnd();
         return input.substring(0, Math.min(end, input.length())).trim();
     }

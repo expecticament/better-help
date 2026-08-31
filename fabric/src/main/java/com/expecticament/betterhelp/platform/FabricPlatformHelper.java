@@ -6,6 +6,7 @@ import com.expecticament.betterhelp.metadata.ModMetadataCollector;
 import com.expecticament.betterhelp.platform.services.IPlatformHelper;
 import net.fabricmc.loader.api.FabricLoader;
 import net.fabricmc.loader.api.ModContainer;
+import org.jetbrains.annotations.NotNull;
 
 import java.io.IOException;
 import java.io.Reader;
@@ -19,7 +20,7 @@ import java.util.stream.Stream;
 public final class FabricPlatformHelper implements IPlatformHelper {
 
     @Override
-    public String getPlatformName() {
+    public @NotNull String getPlatformName() {
         return "Fabric";
     }
 
@@ -34,7 +35,7 @@ public final class FabricPlatformHelper implements IPlatformHelper {
     }
 
     @Override
-    public Map<String, ModMetadata> getModMetadata() {
+    public @NotNull Map<String, ModMetadata> getModMetadata() {
         Map<String, ModMetadata> result = new LinkedHashMap<>();
 
         for (ModContainer mod : FabricLoader.getInstance().getAllMods()) {

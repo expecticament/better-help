@@ -8,6 +8,7 @@ import net.neoforged.fml.ModList;
 import net.neoforged.fml.jarcontents.JarContents;
 import net.neoforged.fml.loading.FMLLoader;
 import net.neoforged.neoforgespi.language.IModInfo;
+import org.jetbrains.annotations.NotNull;
 
 import java.io.Reader;
 import java.nio.charset.StandardCharsets;
@@ -16,7 +17,7 @@ import java.util.*;
 public final class NeoForgePlatformHelper implements IPlatformHelper {
 
     @Override
-    public String getPlatformName() {
+    public @NotNull String getPlatformName() {
         return "NeoForge";
     }
 
@@ -31,7 +32,7 @@ public final class NeoForgePlatformHelper implements IPlatformHelper {
     }
 
     @Override
-    public Map<String, ModMetadata> getModMetadata() {
+    public @NotNull Map<String, ModMetadata> getModMetadata() {
         Map<String, ModMetadataCollector> collectors = new LinkedHashMap<>();
 
         ModList.get().forEachModFile(modFile -> {
