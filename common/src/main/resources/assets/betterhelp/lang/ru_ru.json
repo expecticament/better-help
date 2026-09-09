@@ -31,6 +31,7 @@
   "commands.clear.targets.item.description": "Удаляет подходящие предметы из инвентарей игроков.",
 
   "commands.clone.description": "Копирует блоки из одной области в другую.",
+  "commands.compute.description" : "Вычисляет значение поставщика чисел.",
   "commands.damage.description": "Наносит урон указанной сущности.",
   "commands.data.description": "Получает или изменяет NBT-данные.",
   "commands.datapack.description": "Управляет загруженными наборами данных.",
@@ -58,7 +59,7 @@
   "commands.enchant.description": "Добавляет зачарование предмету в основной руке сущностей.",
   "commands.enchant.targets.enchantment.level.description": "Добавляет зачарование указанного уровня предмету в основной руке сущностей.",
 
-  "commands.execute.description": "",
+  "commands.execute.description": "Выполняет другую команду от имени другой сущности, в другом месте или только при определённых условиях.",
   "commands.experience.description": "Управляет опытом или запрашивает его.",
   "commands.fetchprofile.description": "Загружает профиль игрока.",
   "commands.fill.description": "Заполняет область указанным блоком.",
@@ -92,7 +93,7 @@
   "commands.publish.description": "Открывает мир одиночной игры в локальную сеть.",
   "commands.random.description": "Выбирает случайное значение или управляет случайными последовательностями.",
   "commands.recipe.description": "Выдаёт или забирает рецепты.",
-  "commands.reload.description": "",
+  "commands.reload.description": "Перезагружает наборы данных.",
   "commands.return.description": "",
   "commands.ride.description": "Сажает сущности на других сущностей или снимает их с верховой езды.",
   "commands.rotate.description": "Изменяет поворот сущности.",
