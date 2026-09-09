@@ -31,6 +31,7 @@
   "commands.clear.targets.item.description": "Clears matching items from players' inventories.",
 
   "commands.clone.description": "Copies blocks from one area to another.",
+  "commands.compute.description" : "Evaluates a number provider.",
   "commands.damage.description": "Applies damage to a specified entity.",
   "commands.data.description": "Gets or modifies NBT data.",
   "commands.datapack.description": "Controls loaded data packs.",
@@ -58,7 +59,7 @@
   "commands.enchant.description": "Adds an enchantment to the main-hand item of entities.",
   "commands.enchant.targets.enchantment.level.description": "Adds an enchantment with a specified level to the main-hand item of entities.",
 
-  "commands.execute.description": "",
+  "commands.execute.description": "Runs another command as a different entity, at a different place, or only under certain conditions.",
   "commands.experience.description": "Manages or queries experience.",
   "commands.fetchprofile.description": "Fetches a player profile.",
   "commands.fill.description": "Fills an area with a specified block.",
@@ -92,7 +93,7 @@
   "commands.publish.description": "Opens a singleplayer world to LAN.",
   "commands.random.description": "Draws a random value or manages random sequences.",
   "commands.recipe.description": "Gives or takes recipes.",
-  "commands.reload.description": "",
+  "commands.reload.description": "Reloads data packs.",
   "commands.return.description": "",
   "commands.ride.description": "Makes entities ride other entities or stops entities from riding.",
   "commands.rotate.description": "Changes an entity's rotation.",
