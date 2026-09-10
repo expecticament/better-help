@@ -112,11 +112,29 @@
   "commands.spreadplayers.description": "Разбрасывает сущности по случайным местам.",
   "commands.stop.description": "Останавливает сервер.",
   "commands.stopsound.description": "Останавливает звук.",
+
   "commands.stopwatch.description": "Создаёт и управляет секундомерами.",
+  "commands.stopwatch.create.description": "Создаёт новый секундомер.",
+  "commands.stopwatch.query.description": "Показывает, сколько времени прошло на секундомере.",
+  "commands.stopwatch.remove.description": "Удаляет секундомер.",
+  "commands.stopwatch.restart.description": "Сбрасывает секундомер до нуля.",
+
   "commands.summon.description": "Призывает сущность.",
   "commands.swing.description": "Заставляет сущности взмахнуть рукой.",
   "commands.tag.description": "Управляет тегами сущностей.",
+
   "commands.team.description": "Управляет командами.",
+  "commands.team.add.description": "Создаёт новую команду.",
+  "commands.team.empty.description": "Удаляет всех участников из команды.",
+  "commands.team.join.description": "Добавляет игроков в команду.",
+  "commands.team.join.team.description": "Добавляет вас в команду.",
+  "commands.team.join.team.members.description": "Добавляет указанных игроков в команду.",
+  "commands.team.leave.description": "Удаляет игроков из их текущей команды.",
+  "commands.team.list.description": "Показывает список всех команд.",
+  "commands.team.list.team.description": "Показывает список участников команды.",
+  "commands.team.modify.description": "Изменяет настройки команды.",
+  "commands.team.remove.description": "Удаляет команду.",
+
   "commands.teammsg.description": "Отправляет сообщение команде.",
   "commands.teleport.description": "Телепортирует сущности.",
   "commands.tell.description": "Отправляет личное сообщение другим игрокам.",
@@ -141,5 +159,5 @@
 
   "commands.whitelist.description": "Управляет белым списком сервера.",
   "commands.worldborder.description": "Управляет границей мира.",
-  "commands.xp.description": "Управляет опытом или запрашивает его.",
+  "commands.xp.description": "Управляет опытом или запрашивает его."
 }
