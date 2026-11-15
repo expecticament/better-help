@@ -112,9 +112,9 @@ public final class CommandHelpBuilder {
 
     public @NotNull CommandHelpBuilder withAttribution() {
         if (modMetadata != null) {
-            String homepageLink = modMetadata.getHomepageUrl();
-            modAttributionComponent = homepageLink != null
-                    ? Components.link(source, modMetadata.getName(), URI.create(homepageLink), Constants.MOD_ID + ".commands.help.homepage_hover")
+            URI homepageUri = modMetadata.getHomepageUri();
+            modAttributionComponent = homepageUri != null
+                    ? Components.link(source, modMetadata.getName(), homepageUri, Constants.MOD_ID + ".commands.help.homepage_hover")
                     : Component.literal(modMetadata.getName()).setStyle(Constants.STYLE_SECONDARY);
         }
 
