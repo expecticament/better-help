@@ -2,7 +2,6 @@ package com.expecticament.betterhelp.util;
 
 import com.expecticament.betterhelp.Constants;
 import com.mojang.brigadier.CommandDispatcher;
-import com.mojang.brigadier.tree.ArgumentCommandNode;
 import com.mojang.brigadier.tree.CommandNode;
 import com.mojang.brigadier.tree.LiteralCommandNode;
 import net.minecraft.commands.CommandSourceStack;
@@ -15,6 +14,24 @@ import java.util.*;
  * Helpers for working with Brigadier's {@link CommandDispatcher}.
  */
 public final class CommandDispatcherUtil {
+    private static final List<Field> FIELDS = findFields();
+
+    private CommandDispatcherUtil() {}
+
+    private static @NotNull List<Field> findFields() {
+        try {
+            List<Field> fields = new ArrayList<>();
+            for (String fieldName : List.of("children", "literals", "arguments")) {
+                Field field = CommandNode.class.getDeclaredField(fieldName);
+                field.setAccessible(true);
+                fields.add(field);
+            }
+            return List.copyOf(fields);
+        } catch (Exception e) {
+            Constants.LOGGER.error("Failed to access Brigadier CommandNode fields", e);
+            return List.of();
+        }
+    }
 
     /**
      * Removes a root command from the root node's {@code children}, {@code literals},
@@ -23,25 +40,13 @@ public final class CommandDispatcherUtil {
      * @param dispatcher the dispatcher whose root should be modified.
      * @param name       the root command name to remove.
      */
-    @SuppressWarnings("unchecked")
     public static void unregisterCommand(@NotNull CommandDispatcher<CommandSourceStack> dispatcher, @NotNull String name) {
+        CommandNode<CommandSourceStack> root = dispatcher.getRoot();
         try {
-            CommandNode<CommandSourceStack> root = dispatcher.getRoot();
-
-            Field childrenField = CommandNode.class.getDeclaredField("children");
-            Field literalsField = CommandNode.class.getDeclaredField("literals");
-            Field argumentsField = CommandNode.class.getDeclaredField("arguments");
-            childrenField.setAccessible(true);
-            literalsField.setAccessible(true);
-            argumentsField.setAccessible(true);
-
-            Map<String, CommandNode<CommandSourceStack>> children = (Map<String, CommandNode<CommandSourceStack>>) childrenField.get(root);
-            Map<String, LiteralCommandNode<CommandSourceStack>> literals = (Map<String, LiteralCommandNode<CommandSourceStack>>) literalsField.get(root);
-            Map<String, ArgumentCommandNode<CommandSourceStack, ?>> arguments = (Map<String, ArgumentCommandNode<CommandSourceStack, ?>>) argumentsField.get(root);
-            children.remove(name);
-            literals.remove(name);
-            arguments.remove(name);
-        } catch (ReflectiveOperationException e) {
+            for (Field field : FIELDS) {
+                ((Map<?, ?>) field.get(root)).remove(name);
+            }
+        } catch (Exception e) {
             Constants.LOGGER.error("Failed to unregister /{} command", name, e);
         }
     }
@@ -75,11 +80,7 @@ public final class CommandDispatcherUtil {
                     .add(child.getName());
         }
 
-        Map<String, List<String>> copy = new HashMap<>();
-        for (Map.Entry<String, List<String>> entry : map.entrySet()) {
-            copy.put(entry.getKey(), List.copyOf(entry.getValue()));
-        }
-
-        return Collections.unmodifiableMap(copy);
+        map.replaceAll((key, value) -> value.stream().sorted().toList());
+        return Collections.unmodifiableMap(map);
     }
 }
