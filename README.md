@@ -100,6 +100,8 @@ When set, the mod name in `/help <command...>` output can become a clickable lin
 
 Replace `examplemod` with your mod's id.
 
+Must be a full `http://` or `https://` URL. Invalid URLs are ignored.
+
 You can omit the mod id suffix, but that is not recommended because of translation key conflicts:
 
 ```json
