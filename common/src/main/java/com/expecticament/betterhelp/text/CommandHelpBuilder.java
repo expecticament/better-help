@@ -53,7 +53,7 @@ public final class CommandHelpBuilder {
         if (redirectNode != null) {
             descriptionComponent = Component.empty();
             descriptionComponent
-                    .append(Component.literal(TranslationManager.translate(source, "betterhelp.commands.help.alias_of") + " ").setStyle(Constants.STYLE_BODY))
+                    .append(Component.literal(TranslationManager.translate(source, Constants.MOD_ID + ".commands.help.alias_of") + " ").setStyle(Constants.STYLE_BODY))
                     .append(new CommandHelpBuilder(dispatcher, source, getBaseCommandName(), aliases, null, null).withAliases(false).buildAsHover())
                     .append(Component.literal(". ").setStyle(Constants.STYLE_BODY));
         }
@@ -74,7 +74,7 @@ public final class CommandHelpBuilder {
             return this;
         }
 
-        MutableComponent component = Component.empty().append(Component.literal(TranslationManager.translate(source, "betterhelp.commands.help.aliases") + " ").setStyle(Constants.STYLE_ALIAS)).setStyle(Constants.STYLE_BODY);
+        MutableComponent component = Component.empty().append(Component.literal(TranslationManager.translate(source, Constants.MOD_ID + ".commands.help.aliases") + " ").setStyle(Constants.STYLE_ALIAS)).setStyle(Constants.STYLE_BODY);
         boolean isFirst = true;
         for (String alias : aliases) {
             if (!isFirst) {
@@ -114,7 +114,7 @@ public final class CommandHelpBuilder {
         if (modMetadata != null) {
             String homepageLink = modMetadata.getHomepageUrl();
             modAttributionComponent = homepageLink != null
-                    ? Components.link(source, modMetadata.getName(), URI.create(homepageLink), "%s.commands.help.homepage_hover".formatted(Constants.MOD_ID))
+                    ? Components.link(source, modMetadata.getName(), URI.create(homepageLink), Constants.MOD_ID + ".commands.help.homepage_hover")
                     : Component.literal(modMetadata.getName()).setStyle(Constants.STYLE_SECONDARY);
         }
 
@@ -157,7 +157,7 @@ public final class CommandHelpBuilder {
             if (!asHover) {
                 commandDetailComponent
                         .append("\n")
-                        .append(Component.literal(TranslationManager.translate(source, "betterhelp.commands.help.usage")).setStyle(Constants.STYLE_PRIMARY));
+                        .append(Component.literal(TranslationManager.translate(source, Constants.MOD_ID + ".commands.help.usage")).setStyle(Constants.STYLE_PRIMARY));
             }
 
             Style usageStyle = asHover ? Constants.STYLE_FADED : Constants.STYLE_LIST_ENTRY;
