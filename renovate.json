@@ -1,0 +1,31 @@
+{
+  "$schema": "https://docs.renovatebot.com/renovate-schema.json",
+  "extends": [
+    "config:recommended",
+    "helpers:pinGitHubActionDigests"
+  ],
+  "minimumReleaseAge": "7 days",
+  "labels": [
+    "bot"
+  ],
+  "packageRules": [
+    {
+      "matchPackageNames": [
+        "com.mojang:minecraft",
+        "net.fabricmc:fabric-loader",
+        "net.fabricmc.fabric-api:fabric-api",
+        "net.fabricmc:sponge-mixin",
+        "io.github.llamalad7:mixinextras-common"
+      ],
+      "enabled": false
+    },
+    {
+      "matchDepNames": ["net.fabricmc.fabric-loom"],
+      "registryUrls": ["https://maven.fabricmc.net"]
+    },
+    {
+      "matchDatasources": ["java-version"],
+      "enabled": false
+    }
+  ]
+}
