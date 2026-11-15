@@ -118,7 +118,7 @@ public final class Pagination {
     }
 
     private static @NotNull MutableComponent arrow(@NotNull CommandSourceStack source, boolean previous, boolean enabled, int targetPage, @NotNull Identifier pageClickId) {
-        String hoverKey = previous ? "%s.pagination.previous".formatted(Constants.MOD_ID) : "%s.pagination.next".formatted(Constants.MOD_ID);
+        String hoverKey = Constants.MOD_ID + ".pagination." + (previous ? "previous" : "next");
         ClickEvent clickEvent = enabled ? clickToPage(pageClickId, targetPage) : null;
         HoverEvent hoverEvent = enabled ? new HoverEvent.ShowText(Component.literal(TranslationManager.translate(source, hoverKey))) : null;
 
@@ -136,7 +136,7 @@ public final class Pagination {
             return Component.literal(Integer.toString(page)).setStyle(Constants.STYLE_PAGINATION_MARKER_ACTIVE);
         }
 
-        String hoverText = TranslationManager.translate(source, "%s.pagination.goto".formatted(Constants.MOD_ID)).formatted(page);
+        String hoverText = TranslationManager.translate(source, Constants.MOD_ID + ".pagination.goto").formatted(page);
         HoverEvent hover = new HoverEvent.ShowText(Component.literal(hoverText));
 
         return Component.literal(Constants.SYMBOL_PAGINATION_MARKER).setStyle(Constants.STYLE_PAGINATION_MARKER_INACTIVE
