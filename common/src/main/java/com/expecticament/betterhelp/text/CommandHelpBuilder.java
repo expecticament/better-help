@@ -19,8 +19,8 @@ import java.util.Map;
 
 public final class CommandHelpBuilder {
     private final CommandDispatcher<CommandSourceStack> dispatcher;
-    private final CommandNode<CommandSourceStack> commandNode;
-    private final CommandNode<CommandSourceStack> redirectNode;
+    private final CommandNode<CommandSourceStack> aliasTargetNode;
+    private final CommandNode<CommandSourceStack> usageNode;
     private final CommandSourceStack source;
     private final String commandName;
     private final List<String> aliases;
@@ -29,17 +29,21 @@ public final class CommandHelpBuilder {
     private final List<String> pathSegments;
     private final String displayPath;
 
-    private MutableComponent descriptionComponent;
+    private boolean includeDescription;
+    private boolean includeAliases;
+    private boolean aliasesAsNumber;
     private Map<CommandNode<CommandSourceStack>, String> usage;
     private int usageMaxLines;
-    private Component aliasListComponent;
-    private boolean aliasesAsNumber;
     private Component modAttributionComponent;
 
     public CommandHelpBuilder(@NotNull CommandDispatcher<CommandSourceStack> dispatcher, @NotNull CommandSourceStack source, @NotNull String commandName, @Nullable List<String> aliases, @Nullable List<String> pathSegments, @Nullable String displayPath) {
+        CommandNode<CommandSourceStack> root = dispatcher.getRoot();
+        CommandNode<CommandSourceStack> node = root.getChild(commandName);
+        CommandNode<CommandSourceStack> redirect = node != null ? node.getRedirect() : null;
+
         this.dispatcher = dispatcher;
-        this.commandNode = dispatcher.getRoot().getChild(commandName);
-        this.redirectNode = commandNode != null ? commandNode.getRedirect() : null;
+        this.aliasTargetNode = redirect != null && redirect != node && !node.isFork() && root.getChild(redirect.getName()) == redirect ? redirect : null;
+        this.usageNode = redirect != null && redirect != root ? redirect : node;
         this.source = source;
         this.commandName = commandName;
         this.aliases = aliases != null ? List.copyOf(aliases) : List.of();
@@ -50,50 +54,18 @@ public final class CommandHelpBuilder {
     }
 
     public @NotNull CommandHelpBuilder withDescription() {
-        if (redirectNode != null) {
-            descriptionComponent = Component.empty();
-            descriptionComponent
-                    .append(Component.literal(TranslationManager.translate(source, Constants.MOD_ID + ".commands.help.alias_of") + " ").setStyle(Constants.STYLE_BODY))
-                    .append(new CommandHelpBuilder(dispatcher, source, getBaseCommandName(), aliases, null, null).withAliases(false).buildAsHover())
-                    .append(Component.literal(". ").setStyle(Constants.STYLE_BODY));
-        }
-
-        String descriptionText = ModMetadataRegistry.getDescription(commandMetadata, source, getFullPath(getBaseCommandName()));
-        if (descriptionText != null) {
-            if (descriptionComponent == null) {
-                descriptionComponent = Component.empty();
-            }
-            descriptionComponent.append(Component.literal(descriptionText).setStyle(Constants.STYLE_BODY));
-        }
-
+        includeDescription = true;
         return this;
     }
 
     public @NotNull CommandHelpBuilder withAliases(boolean asNumber) {
-        if (aliases.isEmpty() || redirectNode != null) {
-            return this;
-        }
-
-        MutableComponent component = Component.empty().append(Component.literal(TranslationManager.translate(source, Constants.MOD_ID + ".commands.help.aliases") + " ").setStyle(Constants.STYLE_ALIAS)).setStyle(Constants.STYLE_BODY);
-        boolean isFirst = true;
-        for (String alias : aliases) {
-            if (!isFirst) {
-                component.append(", ");
-            } else {
-                isFirst = false;
-            }
-
-            component.append(new CommandHelpBuilder(dispatcher, source, alias, null, null, null).buildAsHover());
-        }
-
-        aliasListComponent = component;
+        includeAliases = !aliases.isEmpty() && aliasTargetNode == null;
         aliasesAsNumber = asNumber;
-
         return this;
     }
 
     public @NotNull CommandHelpBuilder withUsage(int maxLines) {
-        CommandNode<CommandSourceStack> node = redirectNode != null ? redirectNode : commandNode;
+        CommandNode<CommandSourceStack> node = usageNode;
         for (String segment : pathSegments) {
             if (node == null) {
                 break;
@@ -130,26 +102,31 @@ public final class CommandHelpBuilder {
     }
 
     private @NotNull Component build(boolean asHover) {
+        boolean withEvents = !asHover;
+
         MutableComponent aliasComponent = null;
         MutableComponent commandDetailComponent = Component.empty();
         if (asHover) {
             commandDetailComponent.append(Component.literal(displayPath).setStyle(Constants.STYLE_COMMAND_NAME));
         }
-        if (descriptionComponent != null) {
-            commandDetailComponent
-                    .append("\n")
-                    .append(descriptionComponent.setStyle(Constants.STYLE_BODY));
+        if (includeDescription) {
+            Component descriptionComponent = buildDescription(withEvents);
+            if (descriptionComponent != null) {
+                commandDetailComponent
+                        .append("\n")
+                        .append(descriptionComponent);
+            }
         }
-        if (aliasListComponent != null) {
+        if (includeAliases) {
             if (aliasesAsNumber) {
-                HoverEvent aliasesHoverEvent = new HoverEvent.ShowText(aliasListComponent);
+                HoverEvent aliasesHoverEvent = new HoverEvent.ShowText(buildAliasList(false));
                 aliasComponent = Component.empty()
                         .append(" ")
                         .append(Component.literal("(+%s)".formatted(aliases.size())).setStyle(Constants.STYLE_ALIAS.withHoverEvent(aliasesHoverEvent)));
             } else {
                 commandDetailComponent
                         .append("\n\n")
-                        .append(aliasListComponent);
+                        .append(buildAliasList(withEvents));
             }
         }
         if (usage != null && !usage.isEmpty() && usageMaxLines > 0) {
@@ -204,6 +181,54 @@ public final class CommandHelpBuilder {
         return component;
     }
 
+    private @Nullable Component buildDescription(boolean withEvents) {
+        MutableComponent component = null;
+        if (aliasTargetNode != null) {
+            Component target = withEvents
+                    ? new CommandHelpBuilder(dispatcher, source, aliasTargetNode.getName(), aliases, null, null).withAliases(false).buildAsHover()
+                    : commandName(aliasTargetNode.getName());
+            component = Component.empty()
+                    .append(Component.literal(TranslationManager.translate(source, Constants.MOD_ID + ".commands.help.alias_of") + " "))
+                    .append(target)
+                    .append(". ");
+        }
+
+        String descriptionText = ModMetadataRegistry.getDescription(commandMetadata, source, getFullPath(getBaseCommandName()));
+        if (descriptionText != null) {
+            if (component == null) {
+                component = Component.empty();
+            }
+            component.append(descriptionText);
+        }
+
+        return component != null ? component.setStyle(Constants.STYLE_BODY) : null;
+    }
+
+    private @NotNull Component buildAliasList(boolean withEvents) {
+        MutableComponent component = Component.empty()
+                .append(Component.literal(TranslationManager.translate(source, Constants.MOD_ID + ".commands.help.aliases") + " ").setStyle(Constants.STYLE_ALIAS))
+                .setStyle(Constants.STYLE_BODY);
+
+        boolean isFirst = true;
+        for (String alias : aliases) {
+            if (!isFirst) {
+                component.append(", ");
+            } else {
+                isFirst = false;
+            }
+
+            component.append(withEvents
+                    ? new CommandHelpBuilder(dispatcher, source, alias, null, null, null).buildAsHover()
+                    : commandName(alias));
+        }
+
+        return component;
+    }
+
+    private static @NotNull Component commandName(@NotNull String commandName) {
+        return Component.literal("/" + commandName).setStyle(Constants.STYLE_COMMAND_NAME);
+    }
+
     private @NotNull List<String> getFullPath(@NotNull String commandName) {
         List<String> fullPath = new ArrayList<>();
         fullPath.add(commandName);
@@ -213,6 +238,6 @@ public final class CommandHelpBuilder {
     }
 
     private @NotNull String getBaseCommandName() {
-        return redirectNode != null ? redirectNode.getName() : commandName;
+        return aliasTargetNode != null ? aliasTargetNode.getName() : commandName;
     }
 }

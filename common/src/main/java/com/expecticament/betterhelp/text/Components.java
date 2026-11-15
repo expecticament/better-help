@@ -8,7 +8,9 @@ import org.jetbrains.annotations.NotNull;
 
 import java.net.URI;
 
-public class Components {
+public final class Components {
+    private Components() {}
+
     public static @NotNull Component intoBulletedListEntry(@NotNull Component component) {
         String bulletPoint = Constants.SYMBOL_BULLET_POINT;
         Style style = Constants.STYLE_LIST_ENTRY;
