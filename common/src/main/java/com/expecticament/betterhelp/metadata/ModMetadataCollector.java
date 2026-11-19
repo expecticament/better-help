@@ -18,26 +18,27 @@ import java.util.Set;
  * <p>
  * Accepted keys:
  * <ul>
- *   <li>{@code commands.(path).description}/{@code (modid).commands.(path).description} -
- *       path segments are Brigadier node names ({@code Commands.literal}/{@code Commands.argument} names)</li>
- *   <li>{@code betterhelp.homepage}/{@code betterhelp.homepage.(modid)} - optional homepage URL</li>
+ *   <li>{@code commands.(command).(path).description}/{@code (modId).commands.(command).(path).description} -
+ *       segments are Brigadier node names ({@code Commands.literal}/{@code Commands.argument} names),
+ *       and {@code .(path)} is optional (see {@link ModCommandMetadata#parseDescriptionKey})</li>
+ *   <li>{@code betterhelp.homepage}/{@code betterhelp.homepage.(modId)} - optional homepage URL</li>
  * </ul>
  */
 public final class ModMetadataCollector {
     private static final Gson GSON = new Gson();
 
     private static final String HOMEPAGE_KEY = Constants.MOD_ID + ".homepage";
-    private static final String COMMANDS_PREFIX = "commands.";
-    private static final String DESCRIPTION_SUFFIX = ".description";
 
     private final String id;
     private final String name;
     private String homepageUrl;
 
     /**
-     * Description keys grouped by command, then language.
+     * Descriptions grouped by command, then language:
+     * {@code commandName} - ({@code language} - ({@code path} - {@code text})).
      * <p>
-     * {@code commandName} - ({@code language} - ({@code description key} - {@code text})).
+     * Paths are stored without the {@code commands.(command).}/{@code (modId).commands.(command).} prefix
+     * or the {@code .description} suffix (see {@link ModCommandMetadata}).
      */
     private final Map<String, Map<String, Map<String, String>>> commandDescriptions = new HashMap<>();
 
@@ -85,24 +86,15 @@ public final class ModMetadataCollector {
                 continue;
             }
 
-            String prefix = id + ".";
-            if (key.startsWith(prefix)) {
-                key = key.substring(prefix.length());
-            }
-
-            if (!isCommandDescriptionKey(key)) {
-                continue;
-            }
-
-            String commandName = commandNameFromDescriptionKey(key);
-            if (commandName == null) {
+            ModCommandMetadata.DescriptionKey descriptionKey = ModCommandMetadata.parseDescriptionKey(id, key);
+            if (descriptionKey == null) {
                 continue;
             }
 
             commandDescriptions
-                    .computeIfAbsent(commandName, ignored -> new HashMap<>())
+                    .computeIfAbsent(descriptionKey.getCommandName(), ignored -> new HashMap<>())
                     .computeIfAbsent(language, ignored -> new HashMap<>())
-                    .putIfAbsent(key, value);
+                    .putIfAbsent(descriptionKey.getPath(), value);
         }
     }
 
@@ -136,38 +128,6 @@ public final class ModMetadataCollector {
         }
 
         return new ModMetadata(id, name, homepageUrl, commands);
-    }
-
-    /**
-     * Checks whether a lang key is a command description key.
-     *
-     * @param key the translation key from a language file.
-     * @return {@code true} if the key looks like {@code commands.(path).description}, {@code false} otherwise.
-     */
-    private static boolean isCommandDescriptionKey(@NotNull String key) {
-        return key.startsWith(COMMANDS_PREFIX) && key.endsWith(DESCRIPTION_SUFFIX) && key.length() > COMMANDS_PREFIX.length() + DESCRIPTION_SUFFIX.length();
-    }
-
-    /**
-     * Extracts the command name from a description key.
-     * <p>
-     * Examples:
-     * <ul>
-     *   <li>{@code commands.example.description} - {@code example}</li>
-     *   <li>{@code commands.example.targets.description} - {@code example}</li>
-     * </ul>
-     *
-     * @param key a command description key.
-     * @return the command name, or {@code null} if the path is empty.
-     */
-    private static @Nullable String commandNameFromDescriptionKey(@NotNull String key) {
-        String path = key.substring(COMMANDS_PREFIX.length(), key.length() - DESCRIPTION_SUFFIX.length());
-        if (path.isBlank()) {
-            return null;
-        }
-
-        int dot = path.indexOf('.');
-        return dot < 0 ? path : path.substring(0, dot);
     }
 
     /**

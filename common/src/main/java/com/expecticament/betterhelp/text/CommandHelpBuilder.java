@@ -13,7 +13,6 @@ import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
 
 import java.net.URI;
-import java.util.ArrayList;
 import java.util.List;
 import java.util.Map;
 
@@ -193,7 +192,7 @@ public final class CommandHelpBuilder {
                     .append(". ");
         }
 
-        String descriptionText = ModMetadataRegistry.getDescription(commandMetadata, source, getFullPath(getBaseCommandName()));
+        String descriptionText = ModMetadataRegistry.getDescription(commandMetadata, source, getBaseCommandName(), pathSegments);
         if (descriptionText != null) {
             if (component == null) {
                 component = Component.empty();
@@ -227,14 +226,6 @@ public final class CommandHelpBuilder {
 
     private static @NotNull Component commandName(@NotNull String commandName) {
         return Component.literal("/" + commandName).setStyle(Constants.STYLE_COMMAND_NAME);
-    }
-
-    private @NotNull List<String> getFullPath(@NotNull String commandName) {
-        List<String> fullPath = new ArrayList<>();
-        fullPath.add(commandName);
-        fullPath.addAll(pathSegments);
-
-        return List.copyOf(fullPath);
     }
 
     private @NotNull String getBaseCommandName() {
