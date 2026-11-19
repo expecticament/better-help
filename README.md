@@ -1,4 +1,6 @@
-<img alt="Better /help Header" src="static/header.png">
+<p align="center">
+    <img alt="Better /help Header" src="static/header.png">
+</p>
 
 <p align="center">
   <strong>A Minecraft mod that replaces <code>/help</code> with a clearer, interactable, paginated list.<br>
@@ -15,7 +17,9 @@
 
 ***
 
-<img alt="Hovering commands and switching pages in /help" src="static/help.gif">
+<p align="center">
+    <img alt="Hovering commands and switching pages in /help" src="static/help.gif">
+</p>
 
 ## ✨ Features
 
