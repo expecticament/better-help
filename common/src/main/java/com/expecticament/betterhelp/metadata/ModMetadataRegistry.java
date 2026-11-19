@@ -46,6 +46,9 @@ public final class ModMetadataRegistry {
 
         int byModIdSize = byModId.size();
         int byCommandSize = byCommand.size();
+        String mods = byModIdSize + " mod" + (byModIdSize == 1 ? "" : "s");
+        String commands = byCommandSize + " command" + (byCommandSize == 1 ? "" : "s");
+        Constants.LOGGER.info("Loaded metadata from {} ({})", mods, commands);
 
         // Attribute /help to Better /help
         ModCommandMetadata helpMetadata = new ModCommandMetadata("help", Constants.MOD_ID, Map.of());
@@ -55,7 +58,6 @@ public final class ModMetadataRegistry {
 
         BY_MOD_ID = Collections.unmodifiableMap(byModId);
         BY_COMMAND = Collections.unmodifiableMap(byCommand);
-        Constants.LOGGER.info("Loaded metadata from {} other mods ({} commands)", byModIdSize, byCommandSize);
     }
 
     /**
