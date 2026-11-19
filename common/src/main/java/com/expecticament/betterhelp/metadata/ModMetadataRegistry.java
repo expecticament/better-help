@@ -88,12 +88,13 @@ public final class ModMetadataRegistry {
      *
      * @param command      the command metadata, or {@code null} to skip mod texts.
      * @param source       the command source. Used to determine the player's language.
-     * @param pathSegments the command path pieces from Brigadier node names, for example
-     *                     {@code ["advancement", "grant", "targets", "everything"]}.
+     * @param commandName  the root command's name, for example {@code examplecommand}.
+     * @param pathSegments the path segments without the command name, from Brigadier node names,
+     *                     for example {@code ["arg1", "targets"]}, or empty for the command itself.
      * @return the description text, or {@code null} if nothing is found.
      */
-    public static @Nullable String getDescription(@Nullable ModCommandMetadata command, @NotNull CommandSourceStack source, @NotNull List<String> pathSegments) {
-        if (pathSegments.isEmpty()) {
+    public static @Nullable String getDescription(@Nullable ModCommandMetadata command, @NotNull CommandSourceStack source, @NotNull String commandName, @NotNull List<String> pathSegments) {
+        if (commandName.isBlank()) {
             return null;
         }
 
@@ -104,7 +105,7 @@ public final class ModMetadataRegistry {
             }
         }
 
-        return getBuiltinDescription(source, pathSegments);
+        return getBuiltinDescription(source, commandName, pathSegments);
     }
 
     /**
@@ -113,19 +114,18 @@ public final class ModMetadataRegistry {
      *
      * @param command      the command to search.
      * @param source       the command source. Used to determine the player's language.
-     * @param pathSegments the command path pieces from Brigadier node names, for example
-     *                     {@code ["advancement", "grant", "targets", "everything"]}.
-     * @return the description text, or {@code null} if this command has no matching key.
+     * @param pathSegments the path segments without the command name, from Brigadier node names,
+     *                     for example {@code ["arg1", "targets"]}, or empty for the command itself.
+     * @return the description text, or {@code null} if this command has no matching path.
      */
     private static @Nullable String findModDescription(@NotNull ModCommandMetadata command, @NotNull CommandSourceStack source, @NotNull List<String> pathSegments) {
         String language = TranslationManager.languageOf(source);
-        String fallbackLanguage = TranslationManager.getFallbackLang();
-
         String fromLanguage = findDescription(command, language, pathSegments);
         if (fromLanguage != null) {
             return fromLanguage;
         }
 
+        String fallbackLanguage = TranslationManager.getFallbackLang();
         if (!language.equals(fallbackLanguage)) {
             return findDescription(command, fallbackLanguage, pathSegments);
         }
@@ -134,23 +134,23 @@ public final class ModMetadataRegistry {
     }
 
     /**
-     * Finds a description key in the command metadata for a language, trying longer paths first.
+     * Finds a description in the command metadata for a language, trying longer paths first.
      *
      * @param command      the command to search.
      * @param language     the language code, for example {@code en_us}.
-     * @param pathSegments the command path pieces from Brigadier node names, for example
-     *                     {@code ["advancement", "grant", "targets", "everything"]}.
-     * @return the description text, or {@code null} if this command has no matching key.
+     * @param pathSegments the path segments without the command name, from Brigadier node names,
+     *                     for example {@code ["arg1", "targets"]}, or empty for the command itself.
+     * @return the description text, or {@code null} if this command has no matching path.
      */
     private static @Nullable String findDescription(@NotNull ModCommandMetadata command, @NotNull String language, @NotNull List<String> pathSegments) {
-        Map<String, String> forLanguage = command.getDescriptionTranslations().get(language);
+        Map<String, String> forLanguage = command.getDescriptions().get(language);
         if (forLanguage == null) {
             return null;
         }
 
-        for (int length = pathSegments.size(); length >= 1; length--) {
-            String key = "commands." + String.join(".", pathSegments.subList(0, length)) + ".description";
-            String text = forLanguage.get(key);
+        for (int length = pathSegments.size(); length >= 0; length--) {
+            String path = String.join(".", pathSegments.subList(0, length));
+            String text = forLanguage.get(path);
             if (text != null && !text.isBlank()) {
                 return text;
             }
@@ -163,14 +163,16 @@ public final class ModMetadataRegistry {
      * Looks up a built-in Better /help description (most specific path first).
      *
      * @param source       the command source. Used to determine the player's language.
-     * @param pathSegments the command path pieces from Brigadier node names, for example
-     *                     {@code ["advancement", "grant", "targets", "everything"]}.
+     * @param commandName  the root command's name, for example {@code advancement}.
+     * @param pathSegments the path segments without the command name, from Brigadier node names,
+     *                     for example {@code ["grant", "targets", "everything"]}, or empty for the command itself.
      * @return the built-in description, or {@code null} if nothing is found.
      */
-    private static @Nullable String getBuiltinDescription(@NotNull CommandSourceStack source, @NotNull List<String> pathSegments) {
+    private static @Nullable String getBuiltinDescription(@NotNull CommandSourceStack source, @NotNull String commandName, @NotNull List<String> pathSegments) {
         String language = TranslationManager.languageOf(source);
-        for (int length = pathSegments.size(); length >= 1; length--) {
-            String key = "commands." + String.join(".", pathSegments.subList(0, length)) + ".description";
+        for (int length = pathSegments.size(); length >= 0; length--) {
+            String path = String.join(".", pathSegments.subList(0, length));
+            String key = "commands." + commandName + (path.isEmpty() ? "" : "." + path) + ".description";
             String builtin = TranslationManager.translate(language, key);
             if (!builtin.isBlank() && !builtin.equals(key)) {
                 return builtin;
