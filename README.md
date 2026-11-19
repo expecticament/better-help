@@ -26,10 +26,8 @@ Vanilla `/help` throws a hard-to-read wall of text at you with almost no useful 
 
 ## ⌨️ Usage
 
-| Command              | What it does                         |
-|----------------------|--------------------------------------|
-| `/help`              | Displays the paginated command list  |
-| `/help <command...>` | Shows help for a command or argument |
+- `/help` - displays the paginated command list
+- `/help <command...>` - shows help for a command or argument
 
 Examples:
 
